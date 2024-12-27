@@ -173,3 +173,29 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 .DS_Store
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go vendor directory
+vendor/
+
+# Go modules
+go.sum
+go.work
+go.work.sum
+
+# Go coverage
+*.coverprofile
+*.cov
+*.coverage
+*.cover.out
+
+# Go binaries
+bin/

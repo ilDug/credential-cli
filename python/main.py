@@ -94,7 +94,7 @@ def mongo_utils(
         "host": host,
         "connection_string": mongo_cs,
     }
-    yaml_file = dest / f"mongo_{username.lower()}credentials.yaml"
+    yaml_file = dest / f"mongo_{username.lower()}_credentials.yaml"
     with yaml_file.open("w") as file:
         yaml.dump(credentials_data, file)
     print(f"[green]YAML file created at {yaml_file}")
