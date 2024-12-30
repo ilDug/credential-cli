@@ -37,12 +37,10 @@ func main() {
 	fmt.Print(styles.TitleStyle.Render("Credentials Manager"))
 	switch command {
 	case "MONGO":
-		fmt.Printf("Output directory: %v\n", out)
 		mongo.MongoRun(out)
 
 	case "CERTIFICATE":
 		fmt.Println(styles.CommandStyle.Render("Certificate Manager... generating certificate/key pair"))
-		fmt.Printf("Output directory: %v\n", out)
 
 	}
 }

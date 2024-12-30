@@ -172,7 +172,7 @@ func (c *MongoCredentials) saveCredentialsAsYaml(credentialFilename string) (int
 func validateHostname(hostname string) (bool, error) {
 	pattern, err := regexp.Compile(`[a-z0-9\.\-]+:\d+`)
 	matches := pattern.FindAllString(hostname, -1)
-	return err != nil || matches == nil, err
+	return  matches != nil, err
 }
 
 // isReplicaSet checks if the given hostname belongs to a MongoDB replica set.

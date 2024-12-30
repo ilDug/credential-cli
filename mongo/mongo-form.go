@@ -61,7 +61,7 @@ func formInit(credentials *MongoCredentials) huh.Form {
 					"mongo1.dag.lan:27017,mongo2.dag.lan:27017,mongo3.dag.lan:27017",
 				}).
 				Validate(func(s string) error {
-					if valid, err := validateHostname(s); !valid && err != nil {
+					if valid, err := validateHostname(s); !valid || err != nil {
 						return errors.New("host must be in the format HOST:PORT")
 					}
 					return nil

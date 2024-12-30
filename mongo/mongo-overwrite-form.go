@@ -1,6 +1,8 @@
 package mongo
 
-import "github.com/charmbracelet/huh"
+import (
+	"github.com/charmbracelet/huh"
+)
 
 func overwriteConfim() bool {
 	var overwrite bool
@@ -14,7 +16,7 @@ func overwriteConfim() bool {
 				Affirmative("Yes").
 				Negative("No"),
 		),
-	)
+	)//.WithProgramOptions(tea.WithAltScreen())
 
 	f.Run()
 
