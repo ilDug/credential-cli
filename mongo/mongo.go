@@ -51,21 +51,16 @@ func MongoRun() {
 	fmt.Fprintf(&sb, "Replica Set: %v\n", styles.PaintYellow(credentials.ReplicaSet))
 	fmt.Fprintf(&sb, "Password: %s\n", styles.PaintGray(credentials.Password))
 	fmt.Fprintf(&sb, "Authentication DB: %s\n", styles.PaintOrange(credentials.AuthenticationDB))
-	
 
 	fmt.Println(
 		lipgloss.NewStyle().
-			Width(styles.TerminalWidth -2).
+			Width(styles.TerminalWidth-2).
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("63")).
 			Padding(1, 2).
 			Render(sb.String()),
 	)
 }
-
-
-
-
 
 // Generate the crecentials
 func createCredentials(c *MongoCredentials) {
@@ -130,4 +125,3 @@ func createCredentials(c *MongoCredentials) {
 		log.Info(fmt.Sprintf("Credentials written %d bytes to %s", yamlBytes, credentialFilename))
 	}
 }
-

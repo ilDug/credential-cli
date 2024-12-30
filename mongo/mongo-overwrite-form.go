@@ -2,7 +2,7 @@ package mongo
 
 import "github.com/charmbracelet/huh"
 
-func overwriteConfim() bool{
+func overwriteConfim() bool {
 	var overwrite bool
 
 	f := huh.NewForm(
