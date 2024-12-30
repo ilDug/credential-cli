@@ -9,7 +9,8 @@ import (
 	"regexp"
 	"strings"
 
-	"golang.org/x/exp/rand"
+	"crypto/rand"
+
 	yaml "gopkg.in/yaml.v3"
 )
 

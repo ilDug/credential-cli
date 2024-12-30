@@ -13,7 +13,14 @@ import (
 )
 
 // Run the program and the form
-func MongoRun() {
+func MongoRun(outDir ...string) {
+	var output string
+	if len(outDir) == 0 || outDir[0] == "" {
+		output = "./secret"
+	} else {
+		output = outDir[0]
+	}
+
 	var credentials = MongoCredentials{}
 	credentials.AuthenticationDB = "admin"
 	credentials.ReplicaSet = ""
@@ -40,7 +47,7 @@ func MongoRun() {
 	// 	Title("Generating Credentials...").
 	// 	Action(credentials.createCredentials).Run()
 
-	createCredentials(&credentials)
+	createCredentials(&credentials, output)
 
 	var sb strings.Builder
 
@@ -62,12 +69,31 @@ func MongoRun() {
 	)
 }
 
-// Generate the crecentials
-func createCredentials(c *MongoCredentials) {
-	// check is exsta a folder called "secrets" in the same directory of the executable. If not, create it
-	if _, err := os.Stat("secrets"); os.IsNotExist(err) {
-		log.Info("Creating secrets directory")
-		os.Mkdir("secrets", 0755)
+// createCredentials generates MongoDB credentials and saves them to files.
+// It performs the following steps:
+// 1. Checks if a "secrets" directory exists in the same directory as the executable. If not, it creates the directory.
+// 2. Logs the start of credential generation.
+// 3. If the user is a ROOT user, sets the username to "root" and the database to "admin".
+// 4. Converts all string fields of the MongoCredentials struct to lowercase.
+// 5. Creates a MongoDB user password file with the pattern "MONGO_<USERNAME>_PW" in the specified output directory.
+// 6. Checks if the password file already exists. If it does, prompts the user to confirm overwriting the file.
+// 7. If the user confirms, generates a new password and writes it to the file. Otherwise, reads the existing password from the file.
+// 8. Detects if the MongoDB host is part of a replica set and logs the result.
+// 9. Compiles the MongoDB connection string.
+// 10. Writes a summary of the credentials to a YAML file named "mongo_<username>_credentials.yaml" in the specified output directory.
+//
+// Parameters:
+// - c: A pointer to a MongoCredentials struct containing the MongoDB credentials to be generated.
+// - output: A string specifying the output directory where the credentials files will be saved.
+func createCredentials(c *MongoCredentials, output string) {
+
+	// check if exsist the output folder. If not, create it
+	if _, err := os.Stat(output); os.IsNotExist(err) {
+		log.Info("Creating output directory")
+		if err := os.Mkdir(output, 0755); err != nil {
+			log.Error(err)
+			os.Exit(1)
+		}
 	}
 
 	log.Info("Generating credentials...")
@@ -82,27 +108,24 @@ func createCredentials(c *MongoCredentials) {
 	c.toLower()
 
 	// creating the mongoUserPasswordFile as a pattern MONGO_<USERNAME>_PW.
-	mongoPasswordFilename := fmt.Sprintf("secrets/MONGO_%s_PW", strings.ToUpper(c.Username))
+	mongoPasswordFilename := fmt.Sprintf("%s/MONGO_%s_PW", output, strings.ToUpper(c.Username))
 
 	// Check if the file already exists
 	if _, err := os.Stat(mongoPasswordFilename); err == nil {
 		log.Warn("File already exists\n")
-	}
 
-	if overwritePW := overwriteConfim(); overwritePW {
-		log.Info(("Generating password..."))
-		if pwdBytes, err := c.createPasswordFile(mongoPasswordFilename); err != nil {
-			log.Error(err)
-			os.Exit(1)
+		// Prompt the user to confirm overwriting the file
+		if overwritePW := overwriteConfim(); overwritePW {
+			passwordGeneratorLogger(c, mongoPasswordFilename)
 		} else {
-			log.Info(fmt.Sprintf("Wrote %d bytes to file %v", pwdBytes, mongoPasswordFilename))
+			log.Warn("Skip password generation. Keeping the existing credentials")
+			if err := c.readMongoPasswordFromFile(mongoPasswordFilename); err != nil {
+				log.Error(err)
+				os.Exit(1)
+			}
 		}
 	} else {
-		log.Warn("Skip password generation. Keeping the existing credentials")
-		if err := c.readMongoPasswordFromFile(mongoPasswordFilename); err != nil {
-			log.Error(err)
-			os.Exit(1)
-		}
+		passwordGeneratorLogger(c, mongoPasswordFilename)
 	}
 
 	if r, _ := isReplicaSet(c.Host); r {
@@ -116,12 +139,23 @@ func createCredentials(c *MongoCredentials) {
 
 	// Write a resume of the credentials in a yaml file called "mongo_<username>_credentials.yaml
 	log.Info("Writing credential file...")
-	credentialFilename := fmt.Sprintf("secrets/mongo_%s_credentials.yaml", strings.ToLower(c.Username))
+	credentialFilename := fmt.Sprintf("%s/mongo_%s_credentials.yaml", output, strings.ToLower(c.Username))
 
 	if yamlBytes, err := c.saveCredentialsAsYaml(credentialFilename); err != nil {
 		log.Error(err)
 		os.Exit(1)
 	} else {
 		log.Info(fmt.Sprintf("Credentials written %d bytes to %s", yamlBytes, credentialFilename))
+	}
+}
+
+// log the password generation process while writing the password to a file
+func passwordGeneratorLogger(c *MongoCredentials, mongoPasswordFilename string) {
+	log.Info("Generating password...")
+	if pwdBytes, err := c.createPasswordFile(mongoPasswordFilename); err != nil {
+		log.Error(err)
+		os.Exit(1)
+	} else {
+		log.Info(fmt.Sprintf("Wrote %d bytes to file %v", pwdBytes, mongoPasswordFilename))
 	}
 }

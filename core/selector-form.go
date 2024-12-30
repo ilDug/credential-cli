@@ -7,8 +7,7 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
-// definisce la struttura degli ITEM della lista
-
+var AvailableCommands = []string{"MONGO", "CERTIFICATE"}
 
 func SelectCmd() string{
 	var cmd string
@@ -18,8 +17,8 @@ func SelectCmd() string{
 			Title("Select Command").
 			Description("Select the command to run").
 			Options(
-				huh.NewOption("MongoDB Utilities", "MONGO"),
-				huh.NewOption("Certificate Manager", "CERTIFICATE"),
+				huh.NewOption("MongoDB Utilities", AvailableCommands[0]),
+				huh.NewOption("Certificate Manager", AvailableCommands[1]),
 			).
 			Value(&cmd),
 		),
