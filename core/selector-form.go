@@ -1,15 +1,17 @@
 package core
 
 import (
+	"cre/styles"
 	"fmt"
 	"os"
 
 	"github.com/charmbracelet/huh"
 )
 
-var AvailableCommands = []string{"MONGO", "CERTIFICATE"}
 
-func SelectCmd() string{
+var AvailableCommands = []string{"HELP", "MONGO", "CERTIFICATE"}
+
+func SelectCmd() string {
 	var cmd string
 
 	form := huh.NewForm(
@@ -17,14 +19,15 @@ func SelectCmd() string{
 			Title("Select Command").
 			Description("Select the command to run").
 			Options(
-				huh.NewOption("MongoDB Utilities", AvailableCommands[0]),
-				huh.NewOption("Certificate Manager", AvailableCommands[1]),
+				huh.NewOption("Help", AvailableCommands[0]),
+				huh.NewOption("MongoDB Utilities", AvailableCommands[1]),
+				huh.NewOption("Certificate Manager", AvailableCommands[2]),
 			).
 			Value(&cmd),
 		),
 	)
 
-	err := form.Run()
+	err := form.WithTheme(styles.ThemeDag()).Run()
 
 	if err != nil {
 		fmt.Println("Error running command selection:", err)

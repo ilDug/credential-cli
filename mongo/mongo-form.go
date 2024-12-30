@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"cre/styles"
 	"errors"
 
 	"github.com/charmbracelet/huh"
@@ -88,7 +89,7 @@ func formInit(credentials *MongoCredentials) huh.Form {
 				replica, _ := isReplicaSet(credentials.Host)
 				return !replica
 			}),
-	)
+	).WithHeight(20).WithTheme(styles.ThemeDag())
 	// .WithProgramOptions(tea.WithAltScreen())
 
 	return *form

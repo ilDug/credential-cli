@@ -1,6 +1,8 @@
 package mongo
 
 import (
+	"cre/styles"
+
 	"github.com/charmbracelet/huh"
 )
 
@@ -16,7 +18,8 @@ func overwriteConfim() bool {
 				Affirmative("Yes").
 				Negative("No"),
 		),
-	)//.WithProgramOptions(tea.WithAltScreen())
+	).WithHeight(20).WithTheme(styles.ThemeDag())
+	//.WithProgramOptions(tea.WithAltScreen())
 
 	f.Run()
 
