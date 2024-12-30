@@ -18,25 +18,23 @@ var TitleStyle = lipgloss.NewStyle().
 	Padding(1).
 	Margin(0).
 	MarginBottom(3).
-	Width(TerminalWidth-2).
+	Width(TerminalWidth - 2).
 	Align(lipgloss.Center).
 	BorderStyle(lipgloss.RoundedBorder()).
 	BorderForeground(lipgloss.Color("#4b4559"))
-
 
 var CommandStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color("#a4a8b0")).
 	Margin(1, 0).
 	MarginTop(0).
-	Width(50).
+	// Width(50).
 	Align(lipgloss.Left)
 
 var BoxStyle = lipgloss.NewStyle().
-			Width(TerminalWidth-2).
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("1")).
-			Padding(1, 2)
-		
+	Width(TerminalWidth-2).
+	BorderStyle(lipgloss.RoundedBorder()).
+	BorderForeground(lipgloss.Color("1")).
+	Padding(1, 2)
 
 var PaintRed = func(s string) string {
 	return lipgloss.NewStyle().Foreground(lipgloss.Color("#944753")).Render(s)
@@ -76,7 +74,7 @@ var PaintCyan = func(s string) string {
 
 var PaintOrange = func(s string) string {
 	return lipgloss.NewStyle().Foreground(lipgloss.Color("#c4a24a")).Render(s)
-}	
+}
 
 var PaintMagenta = func(s string) string {
 	return lipgloss.NewStyle().Foreground(lipgloss.Color("#944753")).Render(s)
@@ -214,8 +212,8 @@ func ThemeDag() *huh.Theme {
 		cream    = lipgloss.AdaptiveColor{Light: "#FFFDF5", Dark: "#FFFDF5"}
 		fuchsia  = lipgloss.Color("#F780E2")
 		// green    = lipgloss.AdaptiveColor{Light: "#02BA84", Dark: "#02BF87"}
-		red      = lipgloss.AdaptiveColor{Light: "#FF4672", Dark: "#ED567A"}
-		orange  = lipgloss.AdaptiveColor{Light: "#d19317", Dark: "#d19317"}
+		red    = lipgloss.AdaptiveColor{Light: "#FF4672", Dark: "#ED567A"}
+		orange = lipgloss.AdaptiveColor{Light: "#d19317", Dark: "#d19317"}
 	)
 
 	t.Focused.Base = t.Focused.Base.BorderForeground(lipgloss.Color("238")).Padding(1, 2).MarginBottom(1)

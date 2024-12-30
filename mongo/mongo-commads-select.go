@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"cre/styles"
 	"fmt"
 	"io"
 	"os"
@@ -143,8 +144,11 @@ func MongoCommandSelect(credentialsFile string) {
 
 	m := model{list: l}
 
-	if _, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
+	if res, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
+	}else {
+		fmt.Println(styles.CommandStyle.Render(res.(model).choice))
 	}
+
 }
