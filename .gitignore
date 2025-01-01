@@ -199,3 +199,4 @@ go.work.sum
 
 # Go binaries
 bin/
+.DS_Store

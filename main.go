@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cre/certificates"
 	"cre/core"
 	"cre/mongo"
 	"cre/styles"
@@ -39,14 +40,23 @@ func main() {
 		}
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////
-	// Print the title banner
 	fmt.Print(styles.TitleStyle.Render("Credentials Manager"))
-
-	// Select the command to run
 	switch command {
 	case "HELP":
-		fmt.Println(styles.BoxStyle.Render(core.Help))
+		help := `
+Utility to manage credentials for MongoDB and generate certificates.
+
+Usage: cre [OPTIONS] COMMAND
+Available commands:
+help         Show this help message. 
+mongo        Manage MongoDB credentials. OPTIONS: -credentials, -c | -out, -o
+certificate  Generate a certificate/key pair. OPTIONS: -out, -o
+
+Options:
+-out, -o         Output directory (default: ./secrets)
+-credentials, -c Path to credentials file. show commands to use in mongoShell and info about user.
+		`
+		fmt.Println(styles.BoxStyle.Render(help))
 
 	case "MONGO":
 
@@ -59,51 +69,12 @@ func main() {
 	case "CERTIFICATE":
 		fmt.Println(styles.CommandStyle.Render("Certificate Manager... generating certificate/key pair"))
 
-		// // Define paths for keys and certificates
-		// keysPath := fmt.Sprintf("%s/auth.key", out)
-		// certsPath := fmt.Sprintf("%s/auth.crt", out)
+		certPath := "secrets/certs"
+		keyPath := "secrets/keys"
 
-		// // Generate RSA key
-		// privateKey, err := rsa.GenerateKey(rand.Reader, 4096)
-		// if err != nil {
-		// 	log.Fatalf("Failed to generate private key: %v", err)
-		// }
+		if err := certificates.GenerateCertificate(&certPath, &keyPath); err != nil {
+			log.Fatal(err)
+		}
 
-		// // Create a template for the certificate
-		// template := x509.Certificate{
-		// 	SerialNumber: big.NewInt(1),
-		// 	Subject: pkix.Name{
-		// 		Organization: []string{"Your Organization"},
-		// 	},
-		// 	NotBefore:             time.Now(),
-		// 	NotAfter:              time.Now().AddDate(10, 0, 0), // 10 years
-		// 	KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
-		// 	ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
-		// 	BasicConstraintsValid: true,
-		// }
-
-		// // Create the certificate
-		// certBytes, err := x509.CreateCertificate(rand.Reader, &template, &template, &privateKey.PublicKey, privateKey)
-		// if err != nil {
-		// 	log.Fatalf("Failed to create certificate: %v", err)
-		// }
-
-		// // Save the certificate to a file
-		// certOut, err := os.Create(certsPath)
-		// if err != nil {
-		// 	log.Fatalf("Failed to open cert file for writing: %v", err)
-		// }
-		// pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: certBytes})
-		// certOut.Close()
-
-		// // Save the private key to a file
-		// keyOut, err := os.Create(keysPath)
-		// if err != nil {
-		// 	log.Fatalf("Failed to open key file for writing: %v", err)
-		// }
-		// pem.Encode(keyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(privateKey)})
-		// keyOut.Close()
-
-		// fmt.Println("Certificate and key generated successfully.")
 	}
 }
