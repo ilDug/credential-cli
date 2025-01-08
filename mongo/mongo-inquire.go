@@ -2,81 +2,130 @@ package mongo
 
 import (
 	"cre/styles"
+	"fmt"
+	"io"
+	"os"
+	"strings"
 
-	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/bubbles/list"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
-// type mongoTool struct {
-// 	Description string
-// 	Command     func()
-// }
+const listHeight = 14
 
-func MongoFilePicker(path *string) *huh.Form {
+var (
+	titleStyle        = lipgloss.NewStyle().MarginLeft(2).BorderBottom(true).BorderForeground(lipgloss.Color("241")).BorderStyle(lipgloss.DoubleBorder()).Foreground(lipgloss.Color("30"))
+	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
+	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
+	paginationStyle   = list.DefaultStyles().PaginationStyle.PaddingLeft(4)
+	helpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(4).Foreground(lipgloss.Color("241")).MarginTop(0)
+	quitTextStyle     = lipgloss.NewStyle().MarginLeft(4).Foreground(lipgloss.Color("110"))
+)
 
-	var form = huh.NewForm(
-		huh.NewGroup(
-			huh.NewFilePicker().
-				Picking(true).
-				Title("Credentials File").
-				Description("Select a .yaml file").
-				AllowedTypes([]string{".yaml"}).
-				// Key("credentialsFile").
-				Height(20).
-				CurrentDirectory(*path).
-				ShowHidden(false).
-				Value(path),
-		),
-	).
-		WithShowHelp(true).
-		WithTheme(styles.ThemeDag()).
-		WithHeight(20)
-
-	return form
+type item struct {
+	name string
+	fn   func() string
 }
 
-func MongoInquireForm(tool *string) *huh.Form {
-	// read the file contents of yaml file
-	// yamlFileContent, err := os.ReadFile(*credentialsFile)
-	// if err != nil {
-	// 	e := errors.New("error reading file")
-	// 	errors.Join(e, err)
-	// 	panic(e)
-	// }
+func (i item) FilterValue() string { return i.name }
 
-	// // Parse the YAML file
-	// var credentials MongoCredentials
-	// err = yaml.Unmarshal(yamlFileContent, &credentials)
-	// if err != nil {
-	// 	e := errors.New("error parsing file")
-	// 	errors.Join(e, err)
-	// 	panic(e)
-	// }
+type itemDelegate struct{}
 
-	// cmd := MongoCmd{credentials: &credentials}
+func (d itemDelegate) Height() int                             { return 1 }
+func (d itemDelegate) Spacing() int                            { return 0 }
+func (d itemDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }
+func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
+	i, ok := listItem.(item)
+	if !ok {
+		return
+	}
 
-	form := huh.NewForm(
-		huh.NewGroup(
-			huh.NewSelect[string]().
-				Title("Tool selection").
-				Description("select the utility to parse credentials data").
-				Options(
-					huh.NewOption("Create Mongo User", "CreateUser"),
-					huh.NewOption("Create Mongo Root User", "CreateRootUser"),
-					huh.NewOption("Mongo Connection String", "ConnectionString"),
-					huh.NewOption("Drop Mongo User", "DropUser"),
-					huh.NewOption("Authenticate Mongo User", "Authenticate"),
-					huh.NewOption("Change Mongo User Password", "ChangePassword"),
-					huh.NewOption("Grant Role to User", "GrantRolesToUser"),
-					huh.NewOption("MongoShell Cmd", "MongoShellCmd"),
-				).
-				// Key("tool").
-                Value(tool).
-				Height(20),
-		),
-	).
-		WithShowHelp(true).
-		WithTheme(styles.ThemeDag()).
-		WithHeight(20)
+	str := fmt.Sprintf("[•] %s", i.name)
 
-	return form
+	fn := itemStyle.Render
+	if index == m.Index() {
+		fn = func(s ...string) string {
+			return selectedItemStyle.Render("> " + strings.Join(s, " "))
+		}
+	}
+
+	fmt.Fprint(w, fn(str))
+}
+
+type model struct {
+	list   list.Model
+	choice string
+}
+
+func (m model) Init() tea.Cmd {
+	return nil
+}
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.list.SetWidth(msg.Width)
+		return m, nil
+
+	case tea.KeyMsg:
+		switch keypress := msg.String(); keypress {
+		case "q", "ctrl+c":
+			return m, tea.Quit
+
+		case "enter":
+			i, ok := m.list.SelectedItem().(item)
+			if ok {
+				m.choice = i.fn()
+			}
+			return m, nil
+		}
+	}
+
+	var cmd tea.Cmd
+	m.list, cmd = m.list.Update(msg)
+	return m, cmd
+}
+
+func (m model) View() string {
+	var sb strings.Builder
+	sb.WriteString("\n" + m.list.View())
+	sb.WriteString("\n\n" + helpStyle.Render("//////////////////////////////////////////////////////////////////\n"))
+	sb.WriteString(quitTextStyle.Render(m.choice))
+	sb.WriteString(helpStyle.Render("//////////////////////////////////////////////////////////////////"))
+
+	return sb.String()
+}
+
+func MongoCommandSelect(cmd *MongoCmd) {
+	items := []list.Item{
+		item{"Create Mongo User", cmd.CreateUser},
+		item{"Create Mongo Root User", cmd.CreateRootUser},
+		item{"Mongo Connection String", cmd.ConnectionString},
+		item{"Drop Mongo User", cmd.DropUser},
+		item{"Authenticate Mongo User", cmd.Authenticate},
+		item{"Change Mongo User Password", cmd.ChangePassword},
+		item{"Grant Role to User", cmd.GrantRolesToUser},
+		item{"MongoShell Cmd", cmd.MongoShellCmd},
+	}
+
+	const defaultWidth = 20
+
+	l := list.New(items, itemDelegate{}, defaultWidth, listHeight)
+	l.Title = "Select the desired command"
+	l.SetShowStatusBar(false)
+	l.SetFilteringEnabled(true)
+	l.Styles.Title = titleStyle
+	l.Styles.PaginationStyle = paginationStyle
+	l.Styles.HelpStyle = helpStyle
+
+	m := model{list: l}
+
+	if res, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
+		fmt.Println("Error running program:", err)
+		os.Exit(1)
+	} else {
+		fmt.Println(styles.CommandStyle.Render(res.(model).choice))
+	}
+
 }

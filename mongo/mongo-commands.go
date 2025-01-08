@@ -6,13 +6,13 @@ import (
 )
 
 type MongoCmd struct {
-	credentials *MongoCredentials
+	Credentials *MongoCredentials
 }
 
 func (m *MongoCmd) renderTemplate(tmpl string) string {
 	var result bytes.Buffer
 	t, _ := template.New("createUser").Parse(tmpl)
-	_ = t.Execute(&result, m.credentials)
+	_ = t.Execute(&result, m.Credentials)
 	return result.String()
 }
 
