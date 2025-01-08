@@ -9,7 +9,7 @@ import (
 	"golang.org/x/term"
 )
 
-var TerminalWidth, _, _ = term.GetSize(int(os.Stdout.Fd()))
+var TerminalWidth, TerminalHeight, _ = term.GetSize(int(os.Stdout.Fd()))
 
 var Base = lipgloss.NewStyle().
 	Margin(1, 1, 0).
