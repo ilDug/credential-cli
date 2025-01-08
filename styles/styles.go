@@ -11,14 +11,18 @@ import (
 
 var TerminalWidth, _, _ = term.GetSize(int(os.Stdout.Fd()))
 
-var TitleStyle = lipgloss.NewStyle().
+var Base = lipgloss.NewStyle().
+	Margin(1, 1, 0).
+	Width(TerminalWidth - 4)
+
+var TitleStyle = Base.
 	Bold(true).
 	Foreground(lipgloss.Color("#a2a2a3")).
 	Background(lipgloss.Color("#676078")).
 	Padding(1).
-	Margin(0).
-	MarginBottom(3).
-	Width(TerminalWidth - 2).
+	// Margin(0).
+	// MarginBottom(3).
+	// Width(TerminalWidth - 2).
 	Align(lipgloss.Center).
 	BorderStyle(lipgloss.RoundedBorder()).
 	BorderForeground(lipgloss.Color("#4b4559"))
@@ -30,8 +34,8 @@ var CommandStyle = lipgloss.NewStyle().
 	// Width(50).
 	Align(lipgloss.Left)
 
-var BoxStyle = lipgloss.NewStyle().
-	Width(TerminalWidth-2).
+var BoxStyle = Base.
+	Width(TerminalWidth-4).
 	BorderStyle(lipgloss.RoundedBorder()).
 	BorderForeground(lipgloss.Color("1")).
 	Padding(1, 2)
@@ -216,6 +220,8 @@ func ThemeDag() *huh.Theme {
 		orange = lipgloss.AdaptiveColor{Light: "#d19317", Dark: "#d19317"}
 	)
 
+	t.Form = t.Form.Height(25).MarginLeft(6)
+
 	t.Focused.Base = t.Focused.Base.BorderForeground(lipgloss.Color("238")).Padding(1, 2).MarginBottom(1)
 	t.Focused.Title = t.Focused.Title.Foreground(indigo).Bold(true).MarginBottom(1)
 	t.Focused.NoteTitle = t.Focused.NoteTitle.Foreground(indigo).Bold(true).MarginBottom(1)
@@ -228,8 +234,8 @@ func ThemeDag() *huh.Theme {
 	t.Focused.PrevIndicator = t.Focused.PrevIndicator.Foreground(fuchsia)
 	t.Focused.Option = t.Focused.Option.Foreground(normalFg).MarginBottom(1)
 	t.Focused.MultiSelectSelector = t.Focused.MultiSelectSelector.Foreground(fuchsia)
-	t.Focused.UnselectedOption = t.Focused.UnselectedOption.Foreground(normalFg).MarginBottom(1)
-	t.Focused.SelectedOption = t.Focused.SelectedOption.Foreground(red).MarginBottom(1).Bold(true).BorderLeft(true).BorderLeftForeground(red).BorderStyle(lipgloss.NormalBorder())
+	t.Focused.UnselectedOption = t.Focused.UnselectedOption.Foreground(normalFg)
+	t.Focused.SelectedOption = t.Focused.SelectedOption.Foreground(red).Bold(true).BorderLeft(true).BorderLeftForeground(red).BorderStyle(lipgloss.NormalBorder())
 	t.Focused.SelectedPrefix = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#02CF92", Dark: "#02A877"}).SetString("✓ ")
 	t.Focused.UnselectedPrefix = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "", Dark: "243"}).SetString("• ")
 	t.Focused.UnselectedOption = t.Focused.UnselectedOption.Foreground(normalFg)

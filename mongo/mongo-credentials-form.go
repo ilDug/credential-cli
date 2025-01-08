@@ -7,7 +7,7 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
-func formInit(credentials *MongoCredentials) huh.Form {
+func MongoCredentialsForm(credentials *MongoCredentials) huh.Form {
 
 	// // Define the form and its fields and return it
 	var form = huh.NewForm(

@@ -7,7 +7,6 @@ import (
 
 	"cre/styles"
 
-	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/log"
 )
@@ -25,22 +24,22 @@ func MongoRun(outDir ...string) {
 	credentials.AuthenticationDB = "admin"
 	credentials.ReplicaSet = ""
 
-	form := formInit(&credentials)
+	// form := formInit(&credentials)
 
 	// Run the form.
-	err := form.Run()
+	// err := form.Run()
 
 	// Handle form errors.
-	if err != nil {
-		// If the user aborted the form, exit gracefully.
-		if err == huh.ErrUserAborted {
-			fmt.Println("User aborted")
-			os.Exit(0)
-		}
-		// If there was an error, exit with an error message.
-		fmt.Println("Uh oh:", err)
-		os.Exit(1)
-	}
+	// if err != nil {
+	// 	// If the user aborted the form, exit gracefully.
+	// 	if err == huh.ErrUserAborted {
+	// 		fmt.Println("User aborted")
+	// 		os.Exit(0)
+	// 	}
+	// 	// If there was an error, exit with an error message.
+	// 	fmt.Println("Uh oh:", err)
+	// 	os.Exit(1)
+	// }
 
 	// Run the function to generate the credentials. With Spinner
 	// _ = spinner.New().

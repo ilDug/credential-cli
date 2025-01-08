@@ -9,6 +9,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/log"
 	yaml "gopkg.in/yaml.v3"
@@ -56,6 +57,7 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 }
 
 type model struct {
+	picker huh.Form
 	list   list.Model
 	choice string
 }
@@ -147,8 +149,9 @@ func MongoCommandSelect(credentialsFile string) {
 	if res, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
-	}else {
+	} else {
 		fmt.Println(styles.CommandStyle.Render(res.(model).choice))
 	}
 
 }
+
