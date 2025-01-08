@@ -13,7 +13,7 @@ type Command string
 const (
 	HelpCmd            Command = "HELP"
 	MongoDBGenerate    Command = "MONGO_GENERATE"
-	MongoDBShow        Command = "MONGO_CREDENTIALS"
+	MongoDBInquire        Command = "MONGO_CREDENTIALS"
 	CertificateManager Command = "CERTIFICATE"
 )
 
@@ -26,7 +26,7 @@ func SelectCmdForm(cmd *Command) *huh.Form {
 			Options(
 				huh.NewOption("Help", HelpCmd),
 				huh.NewOption("MongoDB Generate Credentials", MongoDBGenerate),
-				huh.NewOption("MongoDB Show Credentials", MongoDBShow),
+				huh.NewOption("MongoDB Inquire Credentials", MongoDBInquire),
 				huh.NewOption("Certificate Manager", CertificateManager),
 			).
 			Value(cmd).
