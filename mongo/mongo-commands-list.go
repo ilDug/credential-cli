@@ -10,8 +10,6 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/log"
-	yaml "gopkg.in/yaml.v3"
 )
 
 const listHeight = 14
@@ -97,30 +95,9 @@ func (m model) View() string {
 	sb.WriteString(helpStyle.Render("//////////////////////////////////////////////////////////////////"))
 
 	return sb.String()
-
-	// 	if m.choice != "" {
-	// 		return quitTextStyle.Render(m.choice)
-	// 	}
-
-	// return "\n" + m.list.View()
 }
 
-func MongoCommandSelect(credentialsFile string) {
-	// read the file contents of yaml file
-	yamlFileContent, err := os.ReadFile(credentialsFile)
-	if err != nil {
-		log.Fatalf("Failed to read file: %v", err)
-	}
-
-	// Parse the YAML file
-	var credentials MongoCredentials
-	err = yaml.Unmarshal(yamlFileContent, &credentials)
-	if err != nil {
-		log.Fatalf("Failed to parse YAML file: %v", err)
-	}
-
-	var cmd MongoCmd = MongoCmd{credentials: &credentials}
-
+func MongoSelectTool(cmd *MongoCmd) {
 	items := []list.Item{
 		item{"Create Mongo User", cmd.CreateUser},
 		item{"Create Mongo Root User", cmd.CreateRootUser},
@@ -147,7 +124,7 @@ func MongoCommandSelect(credentialsFile string) {
 	if res, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
-	}else {
+	} else {
 		fmt.Println(styles.CommandStyle.Render(res.(model).choice))
 	}
 

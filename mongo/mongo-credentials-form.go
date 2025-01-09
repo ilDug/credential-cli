@@ -7,7 +7,7 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
-func formInit(credentials *MongoCredentials) huh.Form {
+func RunCredentialsForm(credentials *MongoCredentials, path *string) huh.Form {
 
 	// // Define the form and its fields and return it
 	var form = huh.NewForm(
@@ -19,6 +19,21 @@ func formInit(credentials *MongoCredentials) huh.Form {
 			Next(true).
 			NextLabel("Start"),
 		),
+
+		// huh.NewGroup(
+		// 	// select the out directory
+		// 	huh.NewFilePicker().
+		// 		Picking(true).
+		// 		Title("Credentials output folder").
+		// 		Description("Select a folder [default './secrets']").
+		// 		// AllowedTypes([]string{".yaml"}).
+		// 		// Key("credentialsFile").
+		// 		DirAllowed(true).
+		// 		FileAllowed(false).
+		// 		CurrentDirectory(*path).
+		// 		ShowHidden(false).
+		// 		Value(path),
+		// ),
 
 		huh.NewGroup(
 			// select whether the user is acting as a ROOT or not
@@ -89,7 +104,10 @@ func formInit(credentials *MongoCredentials) huh.Form {
 				replica, _ := isReplicaSet(credentials.Host)
 				return !replica
 			}),
-	).WithHeight(20).WithTheme(styles.ThemeDag())
+	).
+		WithHeight(20).
+		WithTheme(styles.ThemeDag()).
+		WithShowHelp(true)
 	// .WithProgramOptions(tea.WithAltScreen())
 
 	return *form
