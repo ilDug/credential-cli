@@ -3,13 +3,13 @@ package core
 var Help string = `
 Utility to manage credentials for MongoDB and generate certificates.
 
-Usage: cre [OPTIONS] COMMAND
-Available commands:
-help         Show this help message. 
-mongo        Manage MongoDB credentials. OPTIONS: -credentials, -c | -out, -o
-certificate  Generate a certificate/key pair. OPTIONS: -out, -o
+Usage: cre 
 
-Options:
--out, -o         Output directory (default: ./secrets)
--credentials, -c Path to credentials file. show commands to use in mongoShell and info about user.
-		`
+Available commands:
+Help         					Show this help message. 
+Mongo Credential Genrator       Manage MongoDB credentials. 
+Mongo Tools						Display tools.
+Certificate  					Generate a certificate/key pair.
+
+Use "cre <command> --help" for more information about a command.
+`
