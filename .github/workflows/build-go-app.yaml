@@ -36,6 +36,10 @@ jobs:
     release:
         needs: build
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                goos: [linux, darwin, windows]
+                goarch: [amd64, arm64]
         steps:
             - name: Download artifacts
               uses: actions/download-artifact@v4
@@ -63,6 +67,6 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                   upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: .
-                  asset_name: cre
+                  asset_path: dist/cre-${{ matrix.goos }}-${{ matrix.goarch }}-${{ github.ref_name }}
+                  asset_name: cre-${{ matrix.goos }}-${{ matrix.goarch }}-${{ github.ref_name }}
                   asset_content_type: application/octet-stream
