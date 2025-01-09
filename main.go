@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/log"
 	"gopkg.in/yaml.v3"
 )
@@ -34,13 +35,36 @@ func main() {
 		fmt.Println(styles.BoxStyle.Render(core.Help))
 
 	case core.MongoDBGenerate:
+		credentials = mongo.MongoCredentials{
+			AuthenticationDB: "admin",
+			ReplicaSet:       "",
+		}
+		
+		outDir := "./secrets"
+		fmt.Println("\n")	
+		form := mongo.RunCredentialsForm(&credentials, &outDir)
+		err1 := form.Run()
+		if err1 != nil {
+			log.Error("Error running credentials form", "ERR", err)
+			os.Exit(0)
+		}
 
-		// var out string
-		// if mongoCredentialsFile != "" {
-		// 	mongo.MongoCommandSelect(mongoCredentialsFile)
-		// } else {
-		// 	mongo.MongoRun(out)
-		// }
+
+		err2 := mongo.CreateCredentials(&credentials, outDir)
+		if err2 != nil {
+			log.Error("Error creating credentials", "ERR", err2)
+			os.Exit(0)
+		}
+
+		resume := mongo.CredentialsResume(&credentials)
+		fmt.Println(
+			lipgloss.NewStyle().
+				Width(styles.TerminalWidth-2).
+				BorderStyle(lipgloss.RoundedBorder()).
+				BorderForeground(lipgloss.Color("63")).
+				Padding(1, 2).
+				Render(resume),
+		)
 
 	case core.MongoDBInquire:
 		var credentialsFile string
@@ -64,7 +88,7 @@ func main() {
 
 		log.Info("Mongo tools ")
 		mongoCmd := mongo.MongoCmd{Credentials: &credentials}
-		mongo.MongoCommandSelect(&mongoCmd)
+		mongo.MongoSelectTool(&mongoCmd)
 
 	}
 }

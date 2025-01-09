@@ -97,7 +97,7 @@ func (m model) View() string {
 	return sb.String()
 }
 
-func MongoCommandSelect(cmd *MongoCmd) {
+func MongoSelectTool(cmd *MongoCmd) {
 	items := []list.Item{
 		item{"Create Mongo User", cmd.CreateUser},
 		item{"Create Mongo Root User", cmd.CreateRootUser},
