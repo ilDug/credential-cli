@@ -8,7 +8,7 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                os: [ubuntu-latest, macos-latest, windows-latest]
+                os: [ubuntu-latest]
                 goos: [linux, darwin, windows]
                 goarch: [amd64, arm64]
 
@@ -24,6 +24,7 @@ jobs:
             - name: Build
               run: |
                   mkdir -p dist
+                  go mod tidy
                   GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o dist/cre-${{ matrix.goos }}-${{ matrix.goarch }}
 
             - name: Upload artifact
