@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cre/certificates"
 	"cre/core"
 	"cre/mongo"
 	"cre/styles"
@@ -39,16 +40,15 @@ func main() {
 			AuthenticationDB: "admin",
 			ReplicaSet:       "",
 		}
-		
+
 		outDir := "./secrets"
-		fmt.Println("\n")	
+		fmt.Println("\n")
 		form := mongo.RunCredentialsForm(&credentials, &outDir)
 		err1 := form.Run()
 		if err1 != nil {
 			log.Error("Error running credentials form", "ERR", err)
 			os.Exit(0)
 		}
-
 
 		err2 := mongo.CreateCredentials(&credentials, outDir)
 		if err2 != nil {
@@ -89,6 +89,23 @@ func main() {
 		log.Info("Mongo tools ")
 		mongoCmd := mongo.MongoCmd{Credentials: &credentials}
 		mongo.MongoSelectTool(&mongoCmd)
+
+	case core.CertificateManager:
+		// form := certificates.CrtPathPicker(&outDir)
+		// err1 := form.Run()
+		// if err1 != nil {
+		// 	log.Error("Error running certificate form", "ERR", err1)
+		// 	os.Exit(0)
+		// }
+
+		outDir := "./secrets"
+		certPath := outDir + "/certs"
+		keysPath := outDir + "/keys"
+		err2 := certificates.GenerateCertificate(&certPath, &keysPath)
+		if err2 != nil {
+			log.Error("Error generating certificate", "ERR", err2)
+			os.Exit(0)
+		}
 
 	}
 }
