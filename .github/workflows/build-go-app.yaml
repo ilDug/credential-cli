@@ -30,8 +30,8 @@ jobs:
             - name: Upload artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: cre-${{ matrix.goos }}-${{ matrix.goarch }}
-                  path: dist/cre-${{ matrix.goos }}-${{ matrix.goarch }}
+                  name: cre-${{ matrix.goos }}-${{ matrix.goarch }}-${{ github.ref_name }}
+                  path: dist/cre-${{ matrix.goos }}-${{ matrix.goarch }}-${{ github.ref_name }}
 
     release:
         needs: build
@@ -42,9 +42,9 @@ jobs:
               with:
                   path: dist
 
-            - name: Get Tags
-              id: tag
-              uses: ildug/get-tag-action@v1.0.3
+            # - name: Get Tags
+            #   id: tag
+            #   uses: ildug/get-tag-action@v1.0.3
 
             - name: Create GitHub Release
               id: create_release
@@ -52,8 +52,8 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  tag_name: ${{ steps.tag.outputs.version }}
-                  release_name: Release ${{ steps.tag.outputs.tag }}
+                  tag_name: ${{ github.ref_name }}
+                  release_name: ${{ github.ref_name }}
                   draft: false
                   prerelease: false
 
